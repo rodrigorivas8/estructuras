@@ -67,6 +67,12 @@ class BST{
         while(aux->*side) aux=aux->*side;
         return aux->data;
     }
+    int height(node* aux){
+        if(!aux) return 0;
+        int hl=height(aux->left),
+                hr=height(aux->right);
+        return std::max(hl,hr)+1;
+    }
 
 public:
     void insert(type data){
@@ -102,15 +108,14 @@ public:
     void remove(type data){
         remove(root,data);
     };
-    void inorder(){
-        inorder(root);
-    };
-
     type popmin(){
         return pop(root,&node::left);
     };
     type popmax(){
         return pop(root,&node::right);
+    };
+    void inorder(){
+        inorder(root);
     };
 
     type max(){
@@ -129,6 +134,9 @@ public:
 
     type seed(){
         return root->data;
+    }
+    int height(){
+        return height(root);
     }
 
     /*
