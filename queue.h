@@ -1,44 +1,45 @@
-#ifndef SEM4_QUEUE_H
-#define SEM4_QUEUE_H
-#endif
-
+template <class type>
 class queue{
     int max;
-    int *list=nullptr;
-    int *head=nullptr;
-    int *tail=nullptr;
+    type *list=nullptr;
+    type *head=nullptr;
+    type *tail=nullptr;
 
 public:
     queue(int m):max(m+1){
-        list=new int[max];
+        list=new type[max];
         head=list;
         tail=head;
     };
 
     bool empty() const;
     bool full() const;
-    int front() const;
-    void enqueue(int);
-    int dequeue();
+    type front() const;
+    void enqueue(type);
+    type dequeue();
 };
 
-bool queue::empty()const{
+template <class type>
+bool queue<type>::empty()const{
     return head==tail;
 }
 
-bool queue::full()const{
+template <class type>
+bool queue<type>::full()const{
     int h=int(head-list),
         t=int(tail-list);
     return h==(t+1)%max;
 }
 
-int queue::front()const{
+template <class type>
+type queue<type>::front()const{
     if(head==tail)
         return -1;
     return *head;
 }
 
-void queue::enqueue(int data){
+template <class type>
+void queue<type>::enqueue(type data){
     int h=int(head-list),
             t=int(tail-list);
     *tail=data;
@@ -50,11 +51,12 @@ void queue::enqueue(int data){
     tail=list+t;
 }
 
-int queue::dequeue(){
+template <class type>
+type queue<type>::dequeue(){
     int h=int(head-list),
-            t=int(tail-list),
-            r=*head;
-    if(h==t) return -1;
+        t=int(tail-list);
+    type r=*head;
+    if(h==t) return nullptr;
     h=(h+1)%max;
     head=list+h;
     return r;
