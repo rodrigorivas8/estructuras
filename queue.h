@@ -24,7 +24,7 @@ public:
 
     type front()const{
         if(head==tail)
-            return -1;
+            return nullptr;
         return *head;
     }
 

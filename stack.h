@@ -15,13 +15,13 @@ public:
     }
 
     type pop(){
-        if(tip==list-1) return -1;
+        if(tip==list-1) return nullptr;
         tip--;
         return *(tip+1);
     }
 
     type top(){
-        if(tip==list-1) return -1;
+        if(tip==list-1) return nullptr;
         return *tip;
     }
 
