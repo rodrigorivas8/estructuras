@@ -83,6 +83,42 @@ public:
         return t.val;
     }
 
+    void insert(type val,int id){
+        if(!head && id!=0) return;
+        if(id==0){
+            auto aux=head;
+            head=new node(val);
+            head->next=aux;
+            return;
+        }
+        auto aux=head;
+        while(-1+id--){
+            aux=aux->next;
+            if(!aux) return;
+        }
+        auto item=new node(val);
+        item->next=aux->next;
+        aux->next=item;
+    }
+
+    void remove(int id){
+        if(!head) return;
+        if(id==0){
+            auto aux=head;
+            head=head->next;
+            delete aux;
+            return;
+        }
+        auto aux=head;
+        while(-1+id--){
+            aux=aux->next;
+            if(!aux) return;
+        }
+        auto temp=aux->next;
+        aux->next=temp->next;
+        delete temp;
+    }
+
     type operator[](int id){
         if(!head) return null;
         auto aux=head;
