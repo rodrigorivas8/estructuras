@@ -1,217 +1,163 @@
-#ifndef SEM2_FORWARD_LIST_H
-#define SEM2_FORWARD_LIST_H
-#endif //SEM2_FORWARD_LIST_H
-
 #include <iostream>
 using namespace std;
 
-template <class T=int>
-struct node{
-    T data=0;
-    node *next=nullptr;
-};
+template <class type>
+class forward_list{
+    struct node{
+        type val;
+        node* next=nullptr;
+        node()=default;
+        explicit node(type v):val(v){}
+        node(type v,node* n):val(v),next(n){}
+    };
+    struct tup{
+        node* n; type val;
+        tup(node* n,type v):n(n),val(v){}
+    };
 
-template <class T=int>
-class list{
-    node<T> *head=nullptr;
+    node* head=nullptr;
+    type null;
+
+    type back(node* n){
+        if(!n->next) return n->val;
+        return back(n->next);
+    }
+
+    node* push_back(type v,node* n){
+        if(!n) return new node(v);
+        n->next=push_back(v,n->next);
+        return n;
+    }
+
+    tup pop_back(node* n){
+        if(!n->next){
+            auto v=n->val;
+            delete n;
+            n=nullptr;
+            return tup(n,v);
+        }
+        tup t=pop_back(n->next);
+        n->next=t.n;
+        return tup(n,t.val);
+    }
 
 public:
+    forward_list()=default;
 
-    T front();
-    T back();
-    void pop_front();
-    void pop_back();
-    void push_front(T);
-    void push_back(T);
-    T operator[](int);
-    node<T>* operator+(int);
-    bool empty();
-    int size();
-    void clear();
-    void swap(int,int);
-    void sort(); //selection
-    void reverse();
+    explicit forward_list(type v)
+    :head(new node(v)){}
 
-    friend ostream& operator<<(ostream &os,const list<T> &l){
-        os<<"[";
-        auto *aux=l.head;
-        while(aux!=nullptr){
-            os<<aux->data;
+    type front(){
+        if(!head) return null;
+        return head->val;
+    }
+
+    type back(){
+        if(!head) return null;
+        return back(head);
+    }
+
+    void push_front(type v){
+        auto aux=head;
+        head=new node(v);
+        head->next=aux;
+    }
+
+    void push_back(type v){
+        head=push_back(v,head);
+    }
+
+    type pop_front(){
+        if(!head) return null;
+        auto val=head->val;
+        auto aux=head;
+        head=head->next;
+        delete aux;
+        return val;
+    }
+
+    type pop_back(){
+        if(!head) return null;
+        tup t=pop_back(head);
+        head=t.n;
+        return t.val;
+    }
+
+    type operator[](int id){
+        if(!head) return null;
+        auto aux=head;
+        while(id--){
             aux=aux->next;
-            if(aux!=nullptr) os<<',';
+            if(!aux) return null;
         }
-        os<<']';
-        return os;
+        return aux->val;
+    }
+
+    bool empty(){
+        return !head;
+    }
+
+    int size(){
+        int s=1;
+        auto aux=head;
+        while(aux && s++)
+            aux=aux->next;
+        return s-1;
+    }
+
+    void clear(){
+        while(head){
+            auto aux=head;
+            head=head->next;
+            delete aux;
+        }
+    }
+
+    void sort(){
+        auto t1=head;
+        while(t1){
+            auto t2=head;
+            while(t2->next){
+                if(t2->val>t2->next->val){
+                    type aux=t2->val;
+                    t2->val=t2->next->val;
+                    t2->next->val=aux;
+                }
+                t2=t2->next;
+            }
+            t1=t1->next;
+        }
+    }
+
+    void reverse(){
+        if(!head) return;
+        auto t1=head;
+        head=nullptr;
+        while(t1){
+            auto t2=t1;
+            t1=t1->next;
+            t2->next=head;
+            head=t2;
+        }
+    }
+
+    friend ostream& operator<<(ostream &os,forward_list l){
+        auto aux=l.head;
+        os<<'[';
+        while(aux){
+            os<<aux->val;
+            aux=aux->next;
+            if(aux) os<<',';
+        }
+        return os<<']';
+    }
+
+    node* operator+(int id){
+        auto aux=head;
+        while(id--){
+            if(!aux) return nullptr;
+            aux=aux->next;
+        }
+        return aux;
     }
 };
-
-template <class T>
-T list<T>::front(){
-    if(head==nullptr)
-        return -1;
-    return head->data;
-}
-
-template <class T>
-T list<T>::back(){
-    if(head==nullptr)
-        return -1;
-    node<T> *aux=head;
-    while(aux->next!=nullptr){
-        aux=aux->next;
-    }
-    return aux->data;
-}
-
-template <class T>
-void list<T>::pop_front(){
-    if(head!=nullptr){
-        auto *aux=head;
-        head=aux->next;
-        delete aux;
-    }
-}
-
-template <class T>
-void list<T>::pop_back(){
-    if(head==nullptr)
-        return;
-    auto *aux=head;
-    if(aux->next==nullptr){
-        delete aux;
-        head=nullptr;
-        return;
-    }
-    while(aux->next->next!=nullptr)
-        aux=aux->next;
-    delete aux->next;
-    aux->next=nullptr;
-}
-
-template <class T>
-void list<T>::push_front(T data){
-    if(head==nullptr){
-        head=new node<T>;
-        head->data=data;
-    }else{
-        auto *aux=new node<T>;
-        aux->next=head;
-        aux->data=data;
-        head=aux;
-    }
-}
-
-template <class T>
-void list<T>::push_back(T data){
-    if(head==nullptr){
-        head=new node<T>;
-        head->data=data;
-    }else{
-        auto *aux=head;
-        while(aux->next!=nullptr){
-            aux=aux->next;
-        }
-        auto *last=new node<T>;
-        aux->next=last;
-        last->data=data;
-    }
-
-}
-
-template <class T>
-T list<T>::operator[](int id){
-    if(head==nullptr)
-        return -1;
-    else{
-        auto *aux=head;
-        int data=-1;
-        for(int i=0;i<=id;i++){
-            if(i!=id && aux->next==nullptr){
-                return -1;
-            }
-            data=aux->data;
-            aux=aux->next;
-        }
-        return data;
-    }
-}
-
-template <class T>
-node<T>* list<T>::operator+(int id){
-    if(empty())return nullptr;
-    auto *aux=head;
-    for(int i=0;i<id;i++){
-        if(i!=id-1 && aux->next==nullptr){
-            return nullptr;
-        }
-        aux=aux->next;
-    }
-    return aux;
-}
-
-template <class T>
-bool list<T>::empty(){
-    return head==nullptr;
-}
-
-template <class T>
-void list<T>::clear(){
-    while(head!=nullptr){
-        auto *aux=head;
-        head=aux->next;
-        delete aux;
-    }
-}
-
-template <class T>
-int list<T>::size(){
-    if(head==nullptr)
-        return 0;
-    int i=1;
-    auto *aux=head;
-    while(aux->next!=nullptr){
-        aux=aux->next;
-        i++;
-    }
-    return i;
-}
-
-template <class T>
-void list<T>::swap(int i,int j){
-    if(head==nullptr) return;
-    auto *aux=*this+i;
-    auto *auy=*this+j;
-    if(aux==nullptr)return;
-    if(auy==nullptr)return;
-    auto temp=aux->data;
-    aux->data=auy->data;
-    auy->data=temp;
-}
-
-template <class T>
-void list<T>::sort(){
-    if(head==nullptr) return;
-    int s=size();
-    for(int i=0;i<s;i++){
-        int min=i;
-        for(int j=i;j<s;j++)
-        {
-            if((*this)[j]<(*this)[min])
-                min=j;
-        }
-        swap(i,min);
-    }
-}
-
-template <class T>
-void list<T>::reverse(){
-    if(head==nullptr)return;
-    node<T> *prev=nullptr,*aux;
-    while(head->next!=nullptr){
-        aux=head;
-        head=head->next;
-        aux->next=prev;
-        prev=aux;
-    }
-    head->next=aux;
-}
