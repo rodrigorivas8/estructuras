@@ -4,6 +4,7 @@ class queue{
     type *list=nullptr;
     type *head=nullptr;
     type *tail=nullptr;
+    type null;
 
 public:
     queue(int m):max(m+1){
@@ -24,7 +25,7 @@ public:
 
     type front()const{
         if(head==tail)
-            return nullptr;
+            return null;
         return *head;
     }
 
@@ -44,7 +45,7 @@ public:
         int h=int(head-list),
                 t=int(tail-list);
         type r=*head;
-        if(h==t) return nullptr;
+        if(h==t) return null;
         h=(h+1)%max;
         head=list+h;
         return r;

@@ -3,6 +3,7 @@ class stack{
     int max;
     type *list=new type[max];
     type *tip=list-1;
+    type null;
 public:
 
     stack(int m):max(m){}
@@ -15,13 +16,13 @@ public:
     }
 
     type pop(){
-        if(tip==list-1) return nullptr;
+        if(tip==list-1) return null;
         tip--;
         return *(tip+1);
     }
 
     type top(){
-        if(tip==list-1) return nullptr;
+        if(tip==list-1) return null;
         return *tip;
     }
 
