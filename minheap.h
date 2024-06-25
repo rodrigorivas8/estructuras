@@ -69,8 +69,7 @@ public:
     void sort(){
         fix();
         int s=n;
-        cout<<this;
-        while(n--) pop();
+        while(n) pop();
         n=s;
     }
 
